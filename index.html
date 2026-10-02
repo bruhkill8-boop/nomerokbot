@@ -3,280 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Номерок Mini App</title>
+    <title>Номерок V3</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-grad: linear-gradient(135deg, #090d16 0%, #0f172a 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --accent-glow: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --gold: #fbbf24;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
         body {
-            background: var(--bg-grad);
-            color: var(--text-main);
-            margin: 0;
-            padding: 16px 12px;
+            background-color: #0b0f19 !important;
+            background-image: radial-gradient(circle at top, #1e1b4b 0%, #0b0f19 70%) !important;
+            color: #f8fafc;
+            padding: 14px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
             user-select: none;
         }
 
-        .container {
+        .app-container {
             width: 100%;
             max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-        }
-
-        /* Glassmorphism cards */
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-        /* Top Bar */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-sub); letter-spacing: 0.5px; text-transform: uppercase; }
-        .stat-value { font-size: 20px; font-weight: 900; color: #fff; }
-
-        /* Country Selector */
-        .country-selector {
-            display: flex;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 4px;
-            border-radius: 12px;
-            gap: 4px;
-            margin-bottom: 14px;
-            border: 1px solid var(--card-border);
-        }
-
-        .c-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-sub);
-            padding: 8px 0;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .c-btn.active {
-            background: #2563eb;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Real Plate Design */
-        .plate-wrapper {
-            perspective: 1000px;
-            margin: 12px 0;
-        }
-
-        .plate {
-            background: #ffffff;
-            border: 3.5px solid #1e293b;
-            border-radius: 10px;
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 0 4px rgba(0,0,0,0.1);
-            position: relative;
-            transition: transform 0.15s ease;
-        }
-
-        .plate-main-text {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 27px;
-            font-weight: 700;
-            color: #0f172a;
-            letter-spacing: 1px;
-        }
-
-        .plate-side {
-            background: #0057b7;
-            height: 38px;
-            width: 22px;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 3px 0;
-            color: #fff;
-            font-size: 9px;
-            font-weight: 800;
-        }
-
-        .plate-side .ua-flag {
-            width: 12px;
-            height: 8px;
-            background: linear-gradient(to bottom, #0057b7 50%, #ffd700 50%);
-            border-radius: 1px;
-        }
-
-        /* Spin Button */
-        .btn-spin {
-            background: var(--accent-glow);
-            color: #fff;
-            border: none;
-            width: 100%;
+        /* Карточки с тиснением и блуром */
+        .card {
+            background: rgba(17, 24, 39, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
             padding: 16px;
-            font-size: 16px;
-            font-weight: 800;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
-            transition: all 0.15s ease;
-            margin-top: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-spin:active { transform: scale(0.97); filter: brightness(0.9); }
-
-        .log-badge {
-            font-size: 13px;
-            font-weight: 700;
-            min-height: 20px;
-            margin-top: 6px;
-        }
-
-        /* Showroom */
-        .section-title { font-size: 14px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-
-        .cars-grid {
+        .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
-        .car-item {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--card-border);
+        .stat-val {
+            font-size: 22px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        /* Переключатель стран */
+        .country-tabs {
+            display: flex;
+            background: #030712;
+            padding: 4px;
             border-radius: 14px;
-            padding: 12px;
+            gap: 4px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .c-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 8px 0;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .c-tab.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Реалистичный автомобильный номер */
+        .plate-box {
+            background: #ffffff;
+            border: 4px solid #000000;
+            border-radius: 10px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .plate-code {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 26px;
+            font-weight: 900;
+            color: #000000;
+            letter-spacing: 1px;
+        }
+
+        .plate-flag-side {
+            background: #0057b7;
+            height: 38px;
+            width: 22px;
+            border-radius: 3px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
-            gap: 4px;
+            justify-content: space-between;
+            padding: 3px 0;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 900;
         }
 
-        .car-icon { font-size: 26px; }
-        .car-name { font-size: 13px; font-weight: 700; }
-        .car-mult { font-size: 11px; color: var(--text-sub); }
+        .flag-mini {
+            width: 13px;
+            height: 8px;
+            background: linear-gradient(to bottom, #0057b7 50%, #ffd700 50%);
+            border-radius: 1px;
+        }
 
-        .btn-buy {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--gold);
-            border: 1px solid rgba(251, 191, 36, 0.3);
+        /* Главная кнопка */
+        .spin-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 900;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            margin-top: 10px;
+        }
+
+        .spin-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Сетка автосалона */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .car-card {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .car-buy-btn {
+            background: #f59e0b;
+            color: #000000;
+            border: none;
             width: 100%;
             padding: 8px;
             font-size: 12px;
-            font-weight: 800;
+            font-weight: 900;
             border-radius: 8px;
-            margin-top: 6px;
+            margin-top: 8px;
             cursor: pointer;
-            transition: all 0.2s;
         }
-
-        .btn-buy:active { background: rgba(251, 191, 36, 0.3); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Top Stats -->
-        <div class="glass-card stats-grid">
-            <div class="stat-box">
-                <span class="stat-label">Баланс</span>
-                <span class="stat-value" id="balanceText" style="color: var(--gold);">1 000 ₽</span>
+    <div class="app-container">
+        <!-- Статистика -->
+        <div class="card stats-grid">
+            <div>
+                <div style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase;">Баланс</div>
+                <div class="stat-val" id="balanceText" style="color:#f59e0b;">5 000 ₽</div>
             </div>
-            <div class="stat-box">
-                <span class="stat-label">Автомобиль</span>
-                <span class="stat-value" id="carText" style="font-size: 15px; color: #38bdf8;">Пешком</span>
+            <div>
+                <div style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase;">Машина</div>
+                <div class="stat-val" id="carText" style="font-size:15px; color:#38bdf8;">Пешком</div>
             </div>
         </div>
 
-        <!-- Main Game Card -->
-        <div class="glass-card" style="text-align: center;">
-            <div class="country-selector">
-                <button class="c-btn active" onclick="setCountry('UA', '🇺🇦')">🇺🇦 UA</button>
-                <button class="c-btn" onclick="setCountry('USA', '🇺🇸')">🇺🇸 USA</button>
-                <button class="c-btn" onclick="setCountry('EU', '🇪🇺')">🇪🇺 EU</button>
-                <button class="c-btn" onclick="setCountry('KZ', '🇰🇿')">🇰🇿 KZ</button>
+        <!-- Поле игры -->
+        <div class="card" style="text-align:center;">
+            <div class="country-tabs">
+                <button class="c-tab active" onclick="setCountry('UA')">🇺🇦 UA</button>
+                <button class="c-tab" onclick="setCountry('USA')">🇺🇸 USA</button>
+                <button class="c-tab" onclick="setCountry('EU')">🇪🇺 EU</button>
+                <button class="c-tab" onclick="setCountry('KZ')">🇰🇿 KZ</button>
             </div>
 
-            <div class="plate-wrapper">
-                <div class="plate" id="plateCard">
-                    <div class="plate-side" id="plateSide">
-                        <div class="ua-flag"></div>
-                        <span id="countryCode">UA</span>
-                    </div>
-                    <div class="plate-main-text" id="plateDisplay">KA 7777 BP</div>
+            <div class="plate-box">
+                <div class="plate-flag-side" id="flagSide">
+                    <div class="flag-mini"></div>
+                    <span id="countryCode">UA</span>
                 </div>
+                <div class="plate-code" id="plateDisplay">KA 7777 BP</div>
             </div>
 
-            <div class="log-badge" id="logText" style="color: var(--text-sub);">Нажми для генерации</div>
-            <div style="font-size: 11px; color: #ef4444; font-weight: 700; margin-top: 4px;">Списание: <span id="spinCostText">500</span> ₽</div>
+            <div id="logText" style="font-size:13px; font-weight:700; color:#94a3b8; min-height:20px; margin-top:8px;">Жми «Крутить»</div>
+            <div style="font-size:11px; color:#ef4444; font-weight:800; margin-top:4px;">Списание: <span id="spinCostText">500</span> ₽</div>
 
-            <button class="btn-spin" onclick="spinPlate()">Крутить номер</button>
+            <button class="spin-btn" onclick="spinPlate()">Крутить номер</button>
         </div>
 
-        <!-- Car Dealership -->
-        <div class="glass-card">
-            <div class="section-title">🏎️ Автосалон (Множитель наград)</div>
+        <!-- Автосалон -->
+        <div class="card">
+            <div style="font-size:14px; font-weight:800;">🚗 Автосалон (Множитель)</div>
             <div class="cars-grid">
-                <div class="car-item">
-                    <div class="car-icon">🚗</div>
-                    <div class="car-name">Жигули</div>
-                    <div class="car-mult">x1.5 к выигрышу</div>
-                    <button class="btn-buy" onclick="buyCar('Жигули', 15000, 1.5)">15 000 ₽</button>
+                <div class="car-card">
+                    <div style="font-size:24px;">🏎️</div>
+                    <div style="font-weight:800; font-size:13px; margin-top:4px;">Жигули</div>
+                    <div style="font-size:10px; color:#94a3b8;">x1.5 к выигрышу</div>
+                    <button class="car-buy-btn" onclick="buyCar('Жигули', 15000, 1.5)">15 000 ₽</button>
                 </div>
-                <div class="car-item">
-                    <div class="car-icon">🏎️</div>
-                    <div class="car-name">BMW M5</div>
-                    <div class="car-mult">x3.0 к выигрышу</div>
-                    <button class="btn-buy" onclick="buyCar('BMW M5', 100000, 3.0)">100 000 ₽</button>
+                <div class="car-card">
+                    <div style="font-size:24px;">🚘</div>
+                    <div style="font-weight:800; font-size:13px; margin-top:4px;">BMW M5</div>
+                    <div style="font-size:10px; color:#94a3b8;">x3.0 к выигрышу</div>
+                    <button class="car-buy-btn" onclick="buyCar('BMW M5', 100000, 3.0)">100 000 ₽</button>
                 </div>
-                <div class="car-item">
-                    <div class="car-icon">🚙</div>
-                    <div class="car-name">Гелик</div>
-                    <div class="car-mult">x5.0 к выигрышу</div>
-                    <button class="btn-buy" onclick="buyCar('Гелик', 500000, 5.0)">500 000 ₽</button>
+                <div class="car-card">
+                    <div style="font-size:24px;">🚙</div>
+                    <div style="font-weight:800; font-size:13px; margin-top:4px;">Гелик</div>
+                    <div style="font-size:10px; color:#94a3b8;">x5.0 к выигрышу</div>
+                    <button class="car-buy-btn" onclick="buyCar('Гелик', 500000, 5.0)">500 000 ₽</button>
                 </div>
-                <div class="car-item">
-                    <div class="car-icon">🚀</div>
-                    <div class="car-name">Bugatti</div>
-                    <div class="car-mult">x10.0 к выигрышу</div>
-                    <button class="btn-buy" onclick="buyCar('Bugatti', 2000000, 10.0)">2 000 000 ₽</button>
+                <div class="car-card">
+                    <div style="font-size:24px;">🚀</div>
+                    <div style="font-weight:800; font-size:13px; margin-top:4px;">Bugatti</div>
+                    <div style="font-size:10px; color:#94a3b8;">x10.0 к выигрышу</div>
+                    <button class="car-buy-btn" onclick="buyCar('Bugatti', 2000000, 10.0)">2 000 000 ₽</button>
                 </div>
             </div>
         </div>
@@ -303,22 +266,18 @@
 
         function setCountry(code) {
             state.country = code;
-            document.querySelectorAll('.c-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.c-tab').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById('countryCode').innerText = code;
         }
 
         function spinPlate() {
             if (state.balance < state.spinCost) {
-                document.getElementById('logText').innerHTML = `<span style="color:#ef4444">Не хватает средств!</span>`;
+                document.getElementById('logText').innerHTML = `<span style="color:#ef4444">Не хватает денег!</span>`;
                 return;
             }
 
             state.balance -= state.spinCost;
-
-            const plateCard = document.getElementById('plateCard');
-            plateCard.style.transform = "scale(0.95)";
-            setTimeout(() => plateCard.style.transform = "scale(1)", 100);
 
             let alpha = alphabets[state.country];
             let randChar = () => alpha[Math.floor(Math.random() * alpha.length)];
@@ -354,20 +313,16 @@
 
             if (numStr.includes("7777") || numStr.includes("0000")) {
                 win = 250000;
-                reason = `🔥 ДЖЕКПОТ 7777!`;
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                reason = `🔥 ДЖЕКПОТ!`;
             } else if (numStr.includes("777") || numStr.includes("000")) {
                 win = 50000;
-                reason = `💎 Три семерки/нуля!`;
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                reason = `💎 3 цифры подряд!`;
             } else if (foundWord) {
                 win = 35000;
-                reason = `😎 Блатные буквы "${foundWord}"!`;
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                reason = `😎 Буквы "${foundWord}"!`;
             } else {
                 win = Math.floor(Math.random() * 300 + 100);
                 reason = `Обычный номер`;
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             }
 
             let totalWin = Math.floor(win * state.multiplier);
@@ -383,8 +338,6 @@
                 state.car = name;
                 state.multiplier = mult;
                 updateUI();
-            } else {
-                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
             }
         }
 
