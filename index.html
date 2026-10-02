@@ -33,6 +33,36 @@
             flex-direction: column;
             gap: 12px;
         }
+        /* Профиль пользователя TG */
+        .user-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            overflow: hidden;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 14px; font-weight: 700; }
+
         .stats-bar {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -42,10 +72,7 @@
             border-radius: 16px;
             border: 1px solid #334155;
         }
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-        }
+        .stat-item { display: flex; flex-direction: column; }
         .stat-title { font-size: 11px; color: var(--gray); text-transform: uppercase; }
         .stat-value { font-size: 18px; font-weight: 800; color: #fff; }
 
@@ -60,7 +87,6 @@
             align-items: center;
             gap: 14px;
             position: relative;
-            overflow: hidden;
         }
         .plate {
             background: #fff;
@@ -97,7 +123,6 @@
             padding: 4px 12px;
             border-radius: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .rarity-common { background: #334155; color: #cbd5e1; }
         .rarity-rare { background: #0284c7; color: #fff; }
@@ -114,9 +139,20 @@
             border-radius: 16px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-            transition: all 0.1s;
         }
         .btn-main:active { transform: scale(0.96); }
+
+        .btn-bonus {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+            color: #111;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+        }
 
         .upgrades-grid {
             display: grid;
@@ -131,7 +167,6 @@
             text-align: left;
             cursor: pointer;
         }
-        .upg-card:hover { border-color: var(--accent); }
         .upg-title { font-size: 13px; font-weight: 700; color: #fff; }
         .upg-desc { font-size: 11px; color: var(--gray); margin: 4px 0; }
         .upg-cost { font-size: 12px; font-weight: 800; color: var(--gold); }
@@ -143,26 +178,40 @@
             border: 1px solid #334155;
         }
         .inv-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
-        .inv-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 120px;
-            overflow-y: auto;
-        }
+        .inv-list { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; }
         .inv-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 12px;
             background: #0f172a;
             padding: 8px 10px;
             border-radius: 8px;
         }
+        .sell-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Верхняя инфо-панель -->
+        <!-- Шапка Telegram профиля -->
+        <div class="user-card">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-name" id="userName">Игрок</div>
+            </div>
+            <button class="btn-bonus" onclick="claimDailyBonus()" id="bonusBtn">🎁 Бонус</button>
+        </div>
+
+        <!-- Статистика игрока -->
         <div class="stats-bar">
             <div class="stat-item">
                 <span class="stat-title">Баланс</span>
@@ -174,10 +223,9 @@
             </div>
         </div>
 
-        <!-- Поле генерации номера -->
+        <!-- Игровое поле -->
         <div class="game-card">
             <div id="rarityBadge" class="rarity-badge rarity-common">Обычный</div>
-            
             <div class="plate" id="plateCard">
                 <div class="plate-text" id="plateDisplay">А 000 АА</div>
                 <div class="plate-region">
@@ -185,33 +233,29 @@
                     <span style="font-size: 9px; font-weight: bold;">RUS</span>
                 </div>
             </div>
-
-            <div id="rewardText" style="font-size: 15px; color: #22c55e; font-weight: 700; min-height: 20px;">
-                Крути номера!
-            </div>
-
+            <div id="rewardText" style="font-size: 15px; color: #22c55e; font-weight: 700; min-height: 20px;">Крути номера!</div>
             <button class="btn-main" id="genBtn" onclick="spinPlate()">Сгенерировать</button>
         </div>
 
-        <!-- Улучшения / Прокачка -->
+        <!-- Прокачка -->
         <div class="upgrades-grid">
             <div class="upg-card" onclick="buyAutoClicker()">
                 <div class="upg-title">🤖 Авто-станок</div>
-                <div class="upg-desc">Генерирует номера каждые 2 сек</div>
+                <div class="upg-desc">Генерирует каждые 2 сек</div>
                 <div class="upg-cost" id="autoCost">10 000 ₽</div>
             </div>
             <div class="upg-card" onclick="buyLucky()">
                 <div class="upg-title">🍀 Удача</div>
-                <div class="upg-desc">+Шанс выбить блатной номер</div>
+                <div class="upg-desc">+Шанс на блатной номер</div>
                 <div class="upg-cost" id="luckyCost">25 000 ₽</div>
             </div>
         </div>
 
-        <!-- Гараж / Коллекция лучших номеров -->
+        <!-- Гараж с возможностью продажи -->
         <div class="inventory">
-            <div class="inv-title">🏆 Топ выбитых номеров</div>
+            <div class="inv-title">🏆 Блатные номера в аукционе</div>
             <div class="inv-list" id="garageList">
-                <div style="font-size: 11px; color: var(--gray);">Выбитых блатныx номеров пока нет...</div>
+                <div style="font-size: 11px; color: var(--gray);">Блатных номеров пока нет...</div>
             </div>
         </div>
     </div>
@@ -230,39 +274,63 @@
             garage: []
         };
 
+        // Загрузка сохраненных данных из CloudStorage Telegram
+        function loadSaveData() {
+            if (tg.CloudStorage) {
+                tg.CloudStorage.getItem('nomerok_game_state', (err, value) => {
+                    if (!err && value) {
+                        try {
+                            let loaded = JSON.parse(value);
+                            state = { ...state, ...loaded };
+                            if (state.autoClicker) startAutoClicker();
+                            renderGarage();
+                            updateUI();
+                        } catch(e) { console.error(e); }
+                    }
+                });
+            }
+        }
+
+        // Автоматическое сохранение в Облако Telegram
+        function saveData() {
+            if (tg.CloudStorage) {
+                tg.CloudStorage.setItem('nomerok_game_state', JSON.stringify(state));
+            }
+        }
+
+        // Подгрузка данных юзера из Telegram
+        function initUser() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                let user = tg.initDataUnsafe.user;
+                document.getElementById('userName').innerText = user.first_name || "Игрок";
+                if (user.photo_url) {
+                    document.getElementById('userAvatar').innerHTML = `<img src="${user.photo_url}">`;
+                } else {
+                    document.getElementById('userAvatar').innerText = (user.first_name || "И")[0];
+                }
+            }
+        }
+
         const letters = "АВЕКМНОРСТУХ";
         const regions = ["77", "99", "199", "777", "161", "78", "54", "05"];
 
         function spinPlate() {
-            // Анимация тряски номера
             const plateCard = document.getElementById('plateCard');
             plateCard.style.transform = "scale(0.95)";
             setTimeout(() => plateCard.style.transform = "scale(1)", 100);
 
-            // Генерация букав и цифр
             let l1 = letters[Math.floor(Math.random() * letters.length)];
             let l2 = letters[Math.floor(Math.random() * letters.length)];
             let l3 = letters[Math.floor(Math.random() * letters.length)];
             
-            // Проверка на редкие номера
-            let isTriple = Math.random() < (0.1 * state.luckyLevel);
-            let numStr = "";
-            
-            if (isTriple) {
-                let digit = Math.floor(Math.random() * 10);
-                numStr = `${digit}${digit}${digit}`; // Например, 777 или 000
-            } else {
-                let n = Math.floor(Math.random() * 900 + 100);
-                numStr = n.toString();
-            }
-
+            let isTriple = Math.random() < (0.08 * state.luckyLevel);
+            let numStr = isTriple ? `${Math.floor(Math.random()*10)}`.repeat(3) : Math.floor(Math.random() * 900 + 100).toString();
             let reg = regions[Math.floor(Math.random() * regions.length)];
             let fullPlate = `${l1} ${numStr} ${l2}${l3}`;
 
             document.getElementById('plateDisplay').innerText = fullPlate;
             document.getElementById('regionDisplay').innerText = reg;
 
-            // Расчет наград и редкости
             let reward = 1000;
             let rarityText = "Обычный";
             let rarityClass = "rarity-common";
@@ -292,6 +360,7 @@
 
             document.getElementById('rewardText').innerText = `+${reward.toLocaleString()} ₽!`;
             updateUI();
+            saveData();
         }
 
         function addExp(amount) {
@@ -304,26 +373,61 @@
         }
 
         function saveToGarage(plate, reg, reward) {
-            state.garage.unshift({ plate: `${plate} ${reg}`, reward });
+            let item = { id: Date.now(), plate: `${plate} ${reg}`, value: reward * 2 };
+            state.garage.unshift(item);
             if (state.garage.length > 5) state.garage.pop();
+            renderGarage();
+        }
 
+        function sellPlate(id) {
+            let item = state.garage.find(i => i.id === id);
+            if (item) {
+                state.balance += item.value;
+                state.garage = state.garage.filter(i => i.id !== id);
+                renderGarage();
+                updateUI();
+                saveData();
+            }
+        }
+
+        function renderGarage() {
             const garageList = document.getElementById('garageList');
+            if (state.garage.length === 0) {
+                garageList.innerHTML = `<div style="font-size: 11px; color: var(--gray);">Блатных номеров пока нет...</div>`;
+                return;
+            }
             garageList.innerHTML = state.garage.map(i => `
                 <div class="inv-item">
                     <span><b>${i.plate}</b></span>
-                    <span style="color: var(--gold);">+${i.reward.toLocaleString()} ₽</span>
+                    <div>
+                        <span style="color: var(--gold); margin-right: 6px;">+${i.value.toLocaleString()} ₽</span>
+                        <button class="sell-btn" onclick="sellPlate(${i.id})">Продать</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function claimDailyBonus() {
+            state.balance += 50000;
+            document.getElementById('bonusBtn').innerText = "✅ Получено";
+            document.getElementById('bonusBtn').disabled = true;
+            updateUI();
+            saveData();
         }
 
         function buyAutoClicker() {
             if (state.balance >= 10000 && !state.autoClicker) {
                 state.balance -= 10000;
                 state.autoClicker = true;
-                document.getElementById('autoCost').innerText = "КУПЛЕНО";
-                setInterval(() => spinPlate(), 2000);
+                startAutoClicker();
                 updateUI();
+                saveData();
             }
+        }
+
+        function startAutoClicker() {
+            document.getElementById('autoCost').innerText = "КУПЛЕНО";
+            setInterval(() => spinPlate(), 2000);
         }
 
         function buyLucky() {
@@ -333,6 +437,7 @@
                 state.luckyLevel++;
                 document.getElementById('luckyCost').innerText = `${(state.luckyLevel * 25000).toLocaleString()} ₽`;
                 updateUI();
+                saveData();
             }
         }
 
@@ -340,8 +445,11 @@
             document.getElementById('balanceText').innerText = state.balance.toLocaleString() + ' ₽';
             let expPercent = Math.floor((state.exp / state.expNext) * 100);
             document.getElementById('levelText').innerText = `${state.level} (${expPercent}%)`;
+            if (state.autoClicker) document.getElementById('autoCost').innerText = "КУПЛЕНО";
         }
 
+        initUser();
+        loadSaveData();
         updateUI();
     </script>
 </body>
