@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Номерок | Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f5f7;
+            --card-bg: #ffffff;
+            --text-color: #111;
+            --accent: #2ecc71;
+            --accent-hover: #27ae60;
+            --gray: #888;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .game-card {
+            background: var(--card-bg);
+            padding: 24px 16px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .plate {
+            background: #fff;
+            border: 3px solid #333;
+            border-radius: 8px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 85%;
+            max-width: 280px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .plate-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #111;
+        }
+        .plate-region {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-left: 2px solid #333;
+            padding-left: 8px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .btn-generate {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        .btn-generate:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div id="levelText">Ур. 1 (0%)</div>
+            <div id="balanceText" style="font-weight: 700;">100 000 ₽</div>
+        </div>
+        <div class="game-card">
+            <div style="font-size: 13px; color: var(--gray);">ГЕНЕРАТОР НОМЕРОВ</div>
+            <div class="plate">
+                <div class="plate-text" id="plateDisplay">А 123 ВС</div>
+                <div class="plate-region">
+                    <span id="regionDisplay">77</span>
+                    <span style="font-size: 9px; font-weight: bold;">RUS</span>
+                </div>
+            </div>
+            <div id="rewardInfo" style="font-size: 14px; color: #27ae60; font-weight: 600; min-height: 20px;">Нажми кнопку!</div>
+            <button class="btn-generate" onclick="generatePlate()">Создать номер</button>
+        </div>
+    </div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let gameState = { balance: 100000, level: 1, exp: 0, expToNext: 100 };
+        const letters = "АВЕКМНОРСТУХ";
+        const regions = ["77", "78", "99", "199", "777", "125", "54", "66"];
+
+        function generatePlate() {
+            let c1 = letters[Math.floor(Math.random() * letters.length)];
+            let num = Math.floor(Math.random() * 900 + 100);
+            let c2 = letters[Math.floor(Math.random() * letters.length)];
+            let c3 = letters[Math.floor(Math.random() * letters.length)];
+            let reg = regions[Math.floor(Math.random() * regions.length)];
+
+            document.getElementById('plateDisplay').innerText = `${c1} ${num} ${c2}${c3}`;
+            document.getElementById('regionDisplay').innerText = reg;
+
+            let earnedMoney = Math.floor(Math.random() * 20000 + 5000);
+            gameState.balance += earnedMoney;
+            gameState.exp += 25;
+
+            if (gameState.exp >= gameState.expToNext) {
+                gameState.level += 1;
+                gameState.exp = 0;
+                gameState.expToNext = Math.floor(gameState.expToNext * 1.5);
+            }
+
+            document.getElementById('rewardInfo').innerText = `+${earnedMoney.toLocaleString()} ₽!`;
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('balanceText').innerText = gameState.balance.toLocaleString() + ' ₽';
+            document.getElementById('levelText').innerText = `Ур. ${gameState.level}`;
+        }
+    </script>
+</body>
+</html>
