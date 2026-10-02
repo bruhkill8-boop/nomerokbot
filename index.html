@@ -2,71 +2,83 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Номерок | Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #f4f5f7;
-            --card-bg: #ffffff;
-            --text-color: #111;
-            --accent: #2ecc71;
-            --accent-hover: #27ae60;
-            --gray: #888;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --gold: #eab308;
+            --gray: #64748b;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            user-select: none;
         }
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .stats-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
             background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #334155;
         }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-title { font-size: 11px; color: var(--gray); text-transform: uppercase; }
+        .stat-value { font-size: 18px; font-weight: 800; color: #fff; }
+
         .game-card {
             background: var(--card-bg);
-            padding: 24px 16px;
+            padding: 20px 16px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #334155;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
         }
         .plate {
             background: #fff;
-            border: 3px solid #333;
-            border-radius: 8px;
-            padding: 10px 16px;
+            border: 4px solid #111;
+            border-radius: 10px;
+            padding: 8px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 85%;
-            max-width: 280px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 290px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease;
         }
         .plate-text {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 30px;
+            font-weight: 900;
             letter-spacing: 2px;
             color: #111;
         }
@@ -74,80 +86,263 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            border-left: 2px solid #333;
+            border-left: 3px solid #111;
             padding-left: 8px;
             font-family: 'Courier New', Courier, monospace;
+            color: #111;
         }
-        .btn-generate {
-            background-color: var(--accent);
+        .rarity-badge {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .rarity-common { background: #334155; color: #cbd5e1; }
+        .rarity-rare { background: #0284c7; color: #fff; }
+        .rarity-legendary { background: #d97706; color: #fff; box-shadow: 0 0 12px rgba(217,119,6,0.6); }
+
+        .btn-main {
+            background: linear-gradient(135deg, #22c55e, #15803d);
             color: white;
             border: none;
             width: 100%;
             padding: 16px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 800;
+            border-radius: 16px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            transition: all 0.1s;
         }
-        .btn-generate:active { transform: scale(0.97); }
+        .btn-main:active { transform: scale(0.96); }
+
+        .upgrades-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .upg-card {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            text-align: left;
+            cursor: pointer;
+        }
+        .upg-card:hover { border-color: var(--accent); }
+        .upg-title { font-size: 13px; font-weight: 700; color: #fff; }
+        .upg-desc { font-size: 11px; color: var(--gray); margin: 4px 0; }
+        .upg-cost { font-size: 12px; font-weight: 800; color: var(--gold); }
+
+        .inventory {
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+        .inv-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+        .inv-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .inv-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            background: #0f172a;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div id="levelText">Ур. 1 (0%)</div>
-            <div id="balanceText" style="font-weight: 700;">100 000 ₽</div>
+        <!-- Верхняя инфо-панель -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-title">Баланс</span>
+                <span class="stat-value" id="balanceText">0 ₽</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-title">Уровень</span>
+                <span class="stat-value" id="levelText">1 (0%)</span>
+            </div>
         </div>
+
+        <!-- Поле генерации номера -->
         <div class="game-card">
-            <div style="font-size: 13px; color: var(--gray);">ГЕНЕРАТОР НОМЕРОВ</div>
-            <div class="plate">
-                <div class="plate-text" id="plateDisplay">А 123 ВС</div>
+            <div id="rarityBadge" class="rarity-badge rarity-common">Обычный</div>
+            
+            <div class="plate" id="plateCard">
+                <div class="plate-text" id="plateDisplay">А 000 АА</div>
                 <div class="plate-region">
                     <span id="regionDisplay">77</span>
                     <span style="font-size: 9px; font-weight: bold;">RUS</span>
                 </div>
             </div>
-            <div id="rewardInfo" style="font-size: 14px; color: #27ae60; font-weight: 600; min-height: 20px;">Нажми кнопку!</div>
-            <button class="btn-generate" onclick="generatePlate()">Создать номер</button>
+
+            <div id="rewardText" style="font-size: 15px; color: #22c55e; font-weight: 700; min-height: 20px;">
+                Крути номера!
+            </div>
+
+            <button class="btn-main" id="genBtn" onclick="spinPlate()">Сгенерировать</button>
+        </div>
+
+        <!-- Улучшения / Прокачка -->
+        <div class="upgrades-grid">
+            <div class="upg-card" onclick="buyAutoClicker()">
+                <div class="upg-title">🤖 Авто-станок</div>
+                <div class="upg-desc">Генерирует номера каждые 2 сек</div>
+                <div class="upg-cost" id="autoCost">10 000 ₽</div>
+            </div>
+            <div class="upg-card" onclick="buyLucky()">
+                <div class="upg-title">🍀 Удача</div>
+                <div class="upg-desc">+Шанс выбить блатной номер</div>
+                <div class="upg-cost" id="luckyCost">25 000 ₽</div>
+            </div>
+        </div>
+
+        <!-- Гараж / Коллекция лучших номеров -->
+        <div class="inventory">
+            <div class="inv-title">🏆 Топ выбитых номеров</div>
+            <div class="inv-list" id="garageList">
+                <div style="font-size: 11px; color: var(--gray);">Выбитых блатныx номеров пока нет...</div>
+            </div>
         </div>
     </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let gameState = { balance: 100000, level: 1, exp: 0, expToNext: 100 };
+        let state = {
+            balance: 1000,
+            level: 1,
+            exp: 0,
+            expNext: 100,
+            autoClicker: false,
+            luckyLevel: 1,
+            garage: []
+        };
+
         const letters = "АВЕКМНОРСТУХ";
-        const regions = ["77", "78", "99", "199", "777", "125", "54", "66"];
+        const regions = ["77", "99", "199", "777", "161", "78", "54", "05"];
 
-        function generatePlate() {
-            let c1 = letters[Math.floor(Math.random() * letters.length)];
-            let num = Math.floor(Math.random() * 900 + 100);
-            let c2 = letters[Math.floor(Math.random() * letters.length)];
-            let c3 = letters[Math.floor(Math.random() * letters.length)];
-            let reg = regions[Math.floor(Math.random() * regions.length)];
+        function spinPlate() {
+            // Анимация тряски номера
+            const plateCard = document.getElementById('plateCard');
+            plateCard.style.transform = "scale(0.95)";
+            setTimeout(() => plateCard.style.transform = "scale(1)", 100);
 
-            document.getElementById('plateDisplay').innerText = `${c1} ${num} ${c2}${c3}`;
-            document.getElementById('regionDisplay').innerText = reg;
-
-            let earnedMoney = Math.floor(Math.random() * 20000 + 5000);
-            gameState.balance += earnedMoney;
-            gameState.exp += 25;
-
-            if (gameState.exp >= gameState.expToNext) {
-                gameState.level += 1;
-                gameState.exp = 0;
-                gameState.expToNext = Math.floor(gameState.expToNext * 1.5);
+            // Генерация букав и цифр
+            let l1 = letters[Math.floor(Math.random() * letters.length)];
+            let l2 = letters[Math.floor(Math.random() * letters.length)];
+            let l3 = letters[Math.floor(Math.random() * letters.length)];
+            
+            // Проверка на редкие номера
+            let isTriple = Math.random() < (0.1 * state.luckyLevel);
+            let numStr = "";
+            
+            if (isTriple) {
+                let digit = Math.floor(Math.random() * 10);
+                numStr = `${digit}${digit}${digit}`; // Например, 777 или 000
+            } else {
+                let n = Math.floor(Math.random() * 900 + 100);
+                numStr = n.toString();
             }
 
-            document.getElementById('rewardInfo').innerText = `+${earnedMoney.toLocaleString()} ₽!`;
+            let reg = regions[Math.floor(Math.random() * regions.length)];
+            let fullPlate = `${l1} ${numStr} ${l2}${l3}`;
+
+            document.getElementById('plateDisplay').innerText = fullPlate;
+            document.getElementById('regionDisplay').innerText = reg;
+
+            // Расчет наград и редкости
+            let reward = 1000;
+            let rarityText = "Обычный";
+            let rarityClass = "rarity-common";
+
+            if (numStr === "777" || numStr === "000") {
+                reward = 100000;
+                rarityText = "👑 ЛЕГЕНДАРНЫЙ";
+                rarityClass = "rarity-legendary";
+                saveToGarage(fullPlate, reg, reward);
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else if (numStr[0] === numStr[1] && numStr[1] === numStr[2]) {
+                reward = 25000;
+                rarityText = "🔥 РЕДКИЙ";
+                rarityClass = "rarity-rare";
+                saveToGarage(fullPlate, reg, reward);
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            } else {
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            }
+
+            state.balance += reward;
+            addExp(15);
+
+            const badge = document.getElementById('rarityBadge');
+            badge.innerText = rarityText;
+            badge.className = `rarity-badge ${rarityClass}`;
+
+            document.getElementById('rewardText').innerText = `+${reward.toLocaleString()} ₽!`;
             updateUI();
         }
 
-        function updateUI() {
-            document.getElementById('balanceText').innerText = gameState.balance.toLocaleString() + ' ₽';
-            document.getElementById('levelText').innerText = `Ур. ${gameState.level}`;
+        function addExp(amount) {
+            state.exp += amount;
+            if (state.exp >= state.expNext) {
+                state.level++;
+                state.exp -= state.expNext;
+                state.expNext = Math.floor(state.expNext * 1.5);
+            }
         }
+
+        function saveToGarage(plate, reg, reward) {
+            state.garage.unshift({ plate: `${plate} ${reg}`, reward });
+            if (state.garage.length > 5) state.garage.pop();
+
+            const garageList = document.getElementById('garageList');
+            garageList.innerHTML = state.garage.map(i => `
+                <div class="inv-item">
+                    <span><b>${i.plate}</b></span>
+                    <span style="color: var(--gold);">+${i.reward.toLocaleString()} ₽</span>
+                </div>
+            `).join('');
+        }
+
+        function buyAutoClicker() {
+            if (state.balance >= 10000 && !state.autoClicker) {
+                state.balance -= 10000;
+                state.autoClicker = true;
+                document.getElementById('autoCost').innerText = "КУПЛЕНО";
+                setInterval(() => spinPlate(), 2000);
+                updateUI();
+            }
+        }
+
+        function buyLucky() {
+            let cost = state.luckyLevel * 25000;
+            if (state.balance >= cost) {
+                state.balance -= cost;
+                state.luckyLevel++;
+                document.getElementById('luckyCost').innerText = `${(state.luckyLevel * 25000).toLocaleString()} ₽`;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('balanceText').innerText = state.balance.toLocaleString() + ' ₽';
+            let expPercent = Math.floor((state.exp / state.expNext) * 100);
+            document.getElementById('levelText').innerText = `${state.level} (${expPercent}%)`;
+        }
+
+        updateUI();
     </script>
 </body>
 </html>
